@@ -1,0 +1,4 @@
+[submodule "tasmota"]
+	path = tasmota
+	url = https://github.com/arendst/Tasmota
+	branch = master

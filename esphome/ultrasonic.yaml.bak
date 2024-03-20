@@ -13,7 +13,7 @@ esp32:
 logger:
 
 wifi:
-  ssid:
+  ssid: io
   manual_ip:
     static_ip: 192.168.2.10
     gateway: 192.168.1.1

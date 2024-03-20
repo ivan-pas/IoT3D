@@ -1,0 +1,462 @@
+esphome:$
+  name: fingerprint$
+  friendly_name: fingerprint$
+$
+esp8266:$
+  board: esp01_1m$
+$
+# Enable logging$
+logger:$
+$
+# Enable Home Assistant API$
+api:$
+  encryption:$
+    key: "rsWTKvQVxPgFucujfYhHXd3YKgvYEnTDAldJjvLw2KA="$
+  services:$
+  - service: enroll$
+    variables:$
+      finger_id: int$
+      num_scans: int$
+    then:$
+      - fingerprint_grow.enroll:$
+          finger_id: !lambda 'return finger_id;'$
+          num_scans: !lambda 'return num_scans;'$
+  - service: cancel_enroll$
+    then:$
+      - fingerprint_grow.cancel_enroll:$
+  - service: delete$
+    variables:$
+      finger_id: int$
+    then:$
+      - fingerprint_grow.delete:$
+          finger_id: !lambda 'return finger_id;'$
+  - service: delete_all$
+    then:$
+      - fingerprint_grow.delete_all:$
+$
+ota:$
+  password: "ac8da78e2ddb82bfb1f2865588032f60"$
+$
+wifi:$
+  ssid: !secret wifi_ssid$
+  password: !secret wifi_password$
+$
+  # Enable fallback hotspot (captive portal) in case wifi connection fails$
+  ap:$
+    ssid: "Fingerprint Fallback Hotspot"$
+    password: "qdxCk4L7Z38C"$
+$
+web_server:$
+  port: 80$
+$
+captive_portal:$
+$
+uart:$
+  rx_pin: GPIO3$
+  tx_pin: GPIO1$
+  baud_rate: 57600$
+$
+fingerprint_grow:$
+  sensing_pin: GPIO12$
+  on_finger_scan_matched:$
+    - text_sensor.template.publish:$
+        id: fingerprint_state$
+        state: "Impronta autorizzata"$
+    - fingerprint_grow.aura_led_control:$
+        state: BREATHING$
+        speed: 200$
+        color: GREEN$
+        count: 1$
+    - delay: 2000ms$
+    - text_sensor.template.publish:$
+        id: fingerprint_state$
+        state: "Attesa"$
+    - fingerprint_grow.aura_led_control:$
+        state: BREATHING$
+        speed: 200$
+        color: BLUE$
+        count: 1$
+  on_finger_scan_unmatched:$
+    - text_sensor.template.publish:$
+        id: fingerprint_state$
+        state: "Impronta non autorizzata"$
+    - fingerprint_grow.aura_led_control:$
+        state: FLASHING$
+        speed: 25$
+        color: RED$
+        count: 2$
+  on_enrollment_scan:$
+    - text_sensor.template.publish:$
+        id: fingerprint_state$
+        state: "Impronta acquisita"$
+    - text_sensor.template.publish:$
+        id: fingerprint_state$
+        state: "Impronta acquisita"$
+    - fingerprint_grow.aura_led_control:$
+        state: FLASHING$
+        speed: 25$
+        color: BLUE$
+        count: 2$
+    - fingerprint_grow.aura_led_control:$
+        state: ALWAYS_ON$
+        speed: 0$
+        color: PURPLE$
+        count: 0$
+  on_enrollment_failed:$
+    - text_sensor.template.publish:$
+        id: fingerprint_state$
+        state: "Acquisizione impronta fallita"$
+    - fingerprint_grow.aura_led_control:$
+        state: FLASHING$
+        speed: 25$
+        color: RED$
+        count: 4$
+$
+$
+# Optional template text sensor for visual feedback$
+text_sensor:$
+  - platform: template$
+    id: fingerprint_state$
+    name: "Stato impronta"$
+$
+# Optional sensors$
+binary_sensor:$
+  - platform: fingerprint_grow$
+    id: fingerprint_enrolling$
+    name: "Acquisendo impronta"$
+$
+sensor:$
+  - platform: fingerprint_grow$
+    fingerprint_count:$
+      name: "Conta impronte"$
+    last_finger_id:$
+      name: "Ultimo ID impronta"$
+    last_confidence:$
+      name: "AffidabilitM-CM-  ultima impronta"$
+    status:$
+      name: "Stato impronta"$
+    capacity:$
+      name: "CapacitM-CM-  impronta"$
+    security_level:$
+      name: "Livello di sicurezza"$
+$
+esphome:^M$
+  name: light ^M$
+  friendly_name: light^M$
+^M$
+esp32:^M$
+  board: lolin_s2_mini^M$
+^M$
+# Enable logging^M$
+logger:^M$
+^M$
+wifi:^M$
+  ssid: io^M$
+  password: 316497852Aa^M$
+  manual_ip:^M$
+    static_ip: 192.168.2.1^M$
+    gateway: 192.168.1.1^M$
+    subnet: 255.255.252.0^M$
+^M$
+ota:^M$
+^M$
+# Enable Home Assistant API^M$
+api:^M$
+  encryption:^M$
+    key: "6GCVh6zaCGxTTNnAbh6i5l02jxSRsxxG44WL+d1YNYE="^M$
+^M$
+web_server:^M$
+  port: 80^M$
+  version: 2^M$
+  local: true^M$
+ ^M$
+i2c:^M$
+  - id: bus_a^M$
+    sda: 9^M$
+    scl: 11^M$
+    scan: true^M$
+ ^M$
+sensor:^M$
+^M$
+  - platform: bh1750^M$
+    name: "BH1750 Illuminance"^M$
+    address: 0x23^M$
+    update_interval: 10s^M$
+    id: bh1750_sensor^M$
+^M$
+text_sensor:^M$
+  - platform: wifi_info^M$
+    ip_address:^M$
+      name: ESP IP Address^M$
+    ssid:^M$
+      name: ESP Connected SSID^M$
+    bssid:^M$
+      name: ESP Connected BSSID^M$
+    mac_address:^M$
+      name: ESP Mac Wifi Address^M$
+esphome:^M$
+  name: presence^M$
+  friendly_name: presence^M$
+^M$
+esp32:^M$
+  board: lolin_s2_mini^M$
+^M$
+# Enable logging^M$
+logger:^M$
+^M$
+wifi:^M$
+  ssid: io^M$
+  password: 316497852Aa^M$
+  manual_ip:^M$
+    static_ip: 192.168.2.1^M$
+    gateway: 192.168.1.1^M$
+    subnet: 255.255.252.0^M$
+^M$
+ota:^M$
+^M$
+# Enable Home Assistant API^M$
+api:^M$
+  encryption:^M$
+    key: "O0RBGthZXEVFzyblMGgddy0OwyQezIUKeXXTsyVWEN8="^M$
+^M$
+web_server:^M$
+  port: 80^M$
+  version: 2^M$
+  local: true^M$
+ ^M$
+ld2410:^M$
+ ^M$
+uart:^M$
+  tx_pin: GPIO18^M$
+  rx_pin: GPIO33^M$
+  baud_rate: 256000^M$
+  parity: NONE^M$
+  stop_bits: 1^M$
+ ^M$
+i2c:^M$
+  - id: bus_a^M$
+    sda: 9 ^M$
+    scl: 11^M$
+    scan: true^M$
+ ^M$
+sensor:^M$
+  - platform: ld2410^M$
+    light:^M$
+      name: light  ^M$
+    moving_distance:^M$
+      name: Moving Distance^M$
+    still_distance:^M$
+      name: Still Distance^M$
+    moving_energy:^M$
+      name: Moving Energy^M$
+    still_energy:^M$
+      name: Still Energy^M$
+    detection_distance:^M$
+      name: Detection Distance^M$
+    g0:^M$
+      move_energy:^M$
+        name: g0 move energy^M$
+      still_energy:^M$
+        name: g0 still energy^M$
+    g1:^M$
+      move_energy:^M$
+        name: g1 move energy^M$
+      still_energy:^M$
+        name: g1 still energy^M$
+    g2:^M$
+      move_energy:^M$
+        name: g2 move energy^M$
+      still_energy:^M$
+        name: g2 still energy^M$
+ ^M$
+  - platform: bh1750^M$
+    name: "BH1750 Illuminance"^M$
+    address: 0x23^M$
+    update_interval: 10s^M$
+    id: bh1750_sensor^M$
+ ^M$
+binary_sensor:^M$
+  - platform: ld2410^M$
+    has_target:^M$
+      name: Presence^M$
+    has_moving_target:^M$
+      name: Moving Target^M$
+    has_still_target:^M$
+      name: Still Target^M$
+    out_pin_presence_status:^M$
+      name: out pin presence status^M$
+ ^M$
+number:^M$
+  - platform: ld2410^M$
+    timeout:^M$
+      name: timeout^M$
+    light_threshold:^M$
+      name: light threshold      ^M$
+    max_move_distance_gate:^M$
+      name: max move distance gate^M$
+    max_still_distance_gate:^M$
+      name: max still distance gate^M$
+    g0:^M$
+      move_threshold:^M$
+        name: g0 move threshold^M$
+      still_threshold:^M$
+        name: g0 still threshold^M$
+    g1:^M$
+      move_threshold:^M$
+        name: g1 move threshold^M$
+      still_threshold:^M$
+        name: g1 still threshold^M$
+    g2:^M$
+      move_threshold:^M$
+        name: g2 move threshold^M$
+      still_threshold:^M$
+        name: g2 still threshold^M$
+ ^M$
+switch:^M$
+  - platform: ld2410^M$
+    engineering_mode:^M$
+      name: Engineering Mode^M$
+ ^M$
+button:^M$
+  - platform: ld2410^M$
+    factory_reset:^M$
+      name: "factory reset"^M$
+    restart:^M$
+      name: "restart"^M$
+    query_params:^M$
+      name: query params^M$
+ ^M$
+select:^M$
+  - platform: ld2410^M$
+    distance_resolution:^M$
+      name: "distance resolution"^M$
+    baud_rate:^M$
+      name: "baud rate"^M$
+    light_function:^M$
+      name: light function^M$
+    out_pin_level:^M$
+      name: out pin level^M$
+ ^M$
+text_sensor:^M$
+  - platform: ld2410^M$
+    version:^M$
+      name: "firmware version"         ^M$
+  - platform: wifi_info^M$
+    ip_address:^M$
+      name: ESP IP Address^M$
+    ssid:^M$
+      name: ESP Connected SSID^M$
+    bssid:^M$
+      name: ESP Connected BSSID^M$
+    mac_address:^M$
+      name: ESP Mac Wifi Address^M$
+# Your Wi-Fi SSID and password$
+wifi_ssid: ""$
+wifi_password: ""$
+$
+substitutions:^M$
+  devicename:    Ultrasonic Sensor^M$
+  devicename_id: ultrasonic_sensor^M$
+^M$
+esphome:^M$
+  name: $devicename_id^M$
+  friendly_name: $devicename^M$
+^M$
+esp32:^M$
+  board: lolin_s2_mini^M$
+^M$
+# Enable logging^M$
+logger:^M$
+^M$
+wifi:^M$
+  ssid: io^M$
+  password: "316497852Aa"^M$
+  manual_ip:^M$
+    static_ip: 192.168.2.10^M$
+    gateway: 192.168.1.1^M$
+    subnet: 255.255.252.0^M$
+^M$
+  ap:^M$
+    ssid:      Presence Hotspot^M$
+    password:  "12345678"^M$
+^M$
+ota:^M$
+^M$
+captive_portal:^M$
+^M$
+# Enable Home Assistant API^M$
+api:^M$
+  encryption:^M$
+    key: "/ApGQuwu3PHMk5dgZxNrBIc1fZDGBDfwt3qi8PoTDWg="^M$
+^M$
+web_server:^M$
+  port: 80^M$
+  version: 2^M$
+  local: true^M$
+ ^M$
+text_sensor:^M$
+  - platform: version^M$
+    name: $devicename ESPHome Version^M$
+  - platform: wifi_info^M$
+    ip_address:^M$
+      name: $devicename IP^M$
+    ssid:^M$
+      name: $devicename SSID^M$
+    bssid:^M$
+      name: $devicename BSSID^M$
+    mac_address:^M$
+      name: $devicename MAC^M$
+^M$
+switch:^M$
+# ------------------------------ Restart board switch^M$
+  - platform: restart^M$
+    name: "$devicename Restart"^M$
+^M$
+sensor:^M$
+^M$
+# ------------------------------ UpTime sensor^M$
+  - platform: uptime^M$
+    name: Presence Sensor Uptime^M$
+  ^M$
+# ------------------------------ WiFi Signal sensor^M$
+  - platform: wifi_signal^M$
+    name: $devicename WiFi Signal^M$
+    update_interval: 60s^M$
+^M$
+  - platform: ultrasonic^M$
+    trigger_pin: GPIO16^M$
+    echo_pin: GPIO18^M$
+    name: "Ultrasonic Sensor"^M$
+    update_interval: 5s^M$
+    timeout: 3.5m^M$
+esphome:$
+  name: watertank$
+  friendly_name: WaterTank$
+$
+esp32:$
+  board: esp32-s2-saola-1$
+  framework:$
+    type: arduino$
+$
+# Enable logging$
+logger:$
+$
+# Enable Home Assistant API$
+api:$
+  encryption:$
+    key: "uxf2gR/zHQTHdxcQPizXPZcMN1cpPBEoQon+m2QOehE="$
+$
+ota:$
+  password: "f21ccb83b26f2f8dbc958a0e3b3b45c2"$
+$
+wifi:$
+  ssid: !secret wifi_ssid$
+  password: !secret wifi_password$
+$
+  # Enable fallback hotspot (captive portal) in case wifi connection fails$
+  ap:$
+    ssid: "Watertank Fallback Hotspot"$
+    password: "9CzXmf2ryQS4"$
+$
+captive_portal:$
+    $
