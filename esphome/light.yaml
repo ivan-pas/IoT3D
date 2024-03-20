@@ -1,0 +1,54 @@
+esphome:
+  name: light 
+  friendly_name: light
+
+esp32:
+  board: lolin_s2_mini
+
+# Enable logging
+logger:
+
+wifi:
+  ssid: io
+  password: 316497852Aa
+  manual_ip:
+    static_ip: 192.168.2.1
+    gateway: 192.168.1.1
+    subnet: 255.255.252.0
+
+ota:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "6GCVh6zaCGxTTNnAbh6i5l02jxSRsxxG44WL+d1YNYE="
+
+web_server:
+  port: 80
+  version: 2
+  local: true
+ 
+i2c:
+  - id: bus_a
+    sda: 9
+    scl: 11
+    scan: true
+ 
+sensor:
+
+  - platform: bh1750
+    name: "BH1750 Illuminance"
+    address: 0x23
+    update_interval: 10s
+    id: bh1750_sensor
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+    ssid:
+      name: ESP Connected SSID
+    bssid:
+      name: ESP Connected BSSID
+    mac_address:
+      name: ESP Mac Wifi Address
