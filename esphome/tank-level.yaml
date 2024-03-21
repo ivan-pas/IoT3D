@@ -1,50 +1,56 @@
 substitutions:
-  devicename:    Tank Level
-  devicename_id: tank-level
-  board_type:    lolin_s2_mini
-  static_ipaddr: 192.168.1.201 # I use static ip address, to use DHCP, remove this row and manual_ip block
-  ap-mode_password: "12345678"
-  upd_interval:  5s
+  devicename:    Tank Level                               # Chose an arbitrary name
+  devicename_id: tank_level                               # chose an arbitrary ID 
+  apikey: "/ApGQuwu3PHMk5dgZxNrBIc1fZDGBDfwt3qi8PoTDWg="  # Random Base64 32byte string - for generating > https://esphome.io/components/api.html#configuration-variables
+  wifi_ssid: name-of-your-wi-fi                           # Change with the name of your Wi-Fi Access Point
+  wifi_password: password-of-your-wifi                    # Change with your Wi-Fi password
+  static_ipaddr: 192.168.1.201                            # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  gateway_ip: 192.168.1.1                                 # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  subnet_mask: 255.255.255.0                              # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  dns_ip: 8.8.8.8                                         # Change for use a static ip address or remove this row and manual_ip block
+  ap_mode_password: 12345678                              # Change password for access point mode (fallback)
+  upd_interval:  5s                                       # Change this if you want to change the sensor update interval
+  min_sensor:    "2048"                                   # Minimum distance from ultrasonic sensor in cm x100 (20cm=2000) , note that JSN-SR04T can't read less than 20cm!
+  max_sensor:    "15500"                                  # Maximum distance inside the tank in cm x100 (20cm=2000)
+  tank_capacity: "1500"                                   # Maximum Tank volume in liters
 
-  min_sensor:    "2048"   # Minimum distance from ultrasonic sensor in cm x100 (20cm=2000) , note that JSN-SR04T can't read less than 20cm!
-  max_sensor:    "15500"  # Maximum distance inside the tank in cm x100 (20cm=2000)
-  tank_capacity: "1500"   # Maximum Tank volume in liters
+##############################################################################################################
 
 esphome:
   name: $devicename_id
 
 esp32:
-  board: $board_type
+  board: lolin_s2_mini
   framework:
     type: arduino
 
 logger:
 
 api:
+  encryption:
+    key: $apikey
 
 ota:
-  password: "0cd32fb984681e61a487c655351c5f12"
-  id: my_ota
 
 wifi:
   networks:
-  - ssid:      Minerva24
-    password:  Minerva2021Alex*
+  - ssid:      $wifi_ssid
+    password:  $wifi_password
 
 #####################################################################
 ######            REMOVE THIS BLOCK IF YOU USE DHCP           #######        
 #####################################################################
   manual_ip:                                                       ##
     static_ip: $static_ipaddr                                      ##
-    gateway:   192.168.1.1                                         ##
-    subnet:    255.255.255.0                                       ##
-    dns1:      192.168.1.1                                         ##
+    gateway:   $gateway_ip                                         ##
+    subnet:    $subnet_mask                                        ##
+    dns1:      $dns_ip                                             ##
                                                                    ##
 #####################################################################
 
   ap:
     ssid:      $devicename Hotspot
-    password:  $ap-mode_password
+    password:  $ap_mode_password
 
 captive_portal:
 

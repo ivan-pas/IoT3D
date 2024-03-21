@@ -1,6 +1,16 @@
 substitutions:
-  devicename:    Ultrasonic Sensor
-  devicename_id: ultrasonic_sensor
+  devicename:    Ultrasonic Sensor                        # Chose an arbitrary name
+  devicename_id: ultrasonic_sensor                        # chose an arbitrary ID 
+  apikey: "/ApGQuwu3PHMk5dgZxNrBIc1fZDGBDfwt3qi8PoTDWg="  # Random Base64 32byte string - for generating > https://esphome.io/components/api.html#configuration-variables
+  wifi_ssid: name-of-your-wi-fi                           # Change with the name of your Wi-Fi Access Point
+  wifi_password: password-of-your-wifi                    # Change with your Wi-Fi password
+  static_ipaddr: 192.168.1.201                            # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  gateway_ip: 192.168.1.1                                 # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  subnet_mask: 255.255.255.0                              # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  dns_ip: 8.8.8.8                                         # Change for use a static ip address or remove this row and manual_ip block
+  ap_mode_password: 12345678                              # Change password for access point mode (fallback)
+
+##############################################################################################################
 
 esphome:
   name: $devicename_id
@@ -10,18 +20,25 @@ esp32:
   board: lolin_s2_mini
 
 # Enable logging
-logger:
+logger: device
 
 wifi:
-  ssid:
-  manual_ip:
-    static_ip: 192.168.2.10
-    gateway: 192.168.1.1
-    subnet: 255.255.252.0
+  ssid: $wifi_ssid
+  password: $wifi_password
+#####################################################################
+######            REMOVE THIS BLOCK IF YOU USE DHCP           #######        
+#####################################################################
+  manual_ip:                                                       ##
+    static_ip: $static_ipaddr                                      ##
+    gateway:   $gateway_ip                                         ##
+    subnet:    $subnet_mask                                        ##
+    dns1:      $dns_ip                                             ##
+                                                                   ##
+#####################################################################
 
   ap:
-    ssid:      Presence Hotspot
-    password:  "12345678"
+    ssid:      $devicename Hotspot
+    password:  $ap-mode_password
 
 ota:
 
@@ -30,7 +47,7 @@ captive_portal:
 # Enable Home Assistant API
 api:
   encryption:
-    key: "/ApGQuwu3PHMk5dgZxNrBIc1fZDGBDfwt3qi8PoTDWg="
+    key: $apikey
 
 web_server:
   port: 80
@@ -71,4 +88,4 @@ sensor:
     echo_pin: GPIO18
     name: "Ultrasonic Sensor"
     update_interval: 5s
-    timeout: 3.5m
+    timeout: 4m
