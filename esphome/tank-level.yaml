@@ -1,0 +1,158 @@
+substitutions:
+  devicename:    Tank Level
+  devicename_id: tank-level
+  board_type:    lolin_s2_mini
+  static_ipaddr: 192.168.1.201 # I use static ip address, to use DHCP, remove this row and manual_ip block
+  ap-mode_password: "12345678"
+  upd_interval:  5s
+
+  min_sensor:    "2048"   # Minimum distance from ultrasonic sensor in cm x100 (20cm=2000) , note that JSN-SR04T can't read less than 20cm!
+  max_sensor:    "15500"  # Maximum distance inside the tank in cm x100 (20cm=2000)
+  tank_capacity: "1500"   # Maximum Tank volume in liters
+
+esphome:
+  name: $devicename_id
+
+esp32:
+  board: $board_type
+  framework:
+    type: arduino
+
+logger:
+
+api:
+
+ota:
+  password: "0cd32fb984681e61a487c655351c5f12"
+  id: my_ota
+
+wifi:
+  networks:
+  - ssid:      Minerva24
+    password:  Minerva2021Alex*
+
+#####################################################################
+######            REMOVE THIS BLOCK IF YOU USE DHCP           #######        
+#####################################################################
+  manual_ip:                                                       ##
+    static_ip: $static_ipaddr                                      ##
+    gateway:   192.168.1.1                                         ##
+    subnet:    255.255.255.0                                       ##
+    dns1:      192.168.1.1                                         ##
+                                                                   ##
+#####################################################################
+
+  ap:
+    ssid:      $devicename Hotspot
+    password:  $ap-mode_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  version: 2
+  local: true
+
+binary_sensor:
+- platform: status
+  name: $devicename Status
+
+time:
+  - platform: sntp
+    timezone: Europe/Rome
+    servers:  0.pool.ntp.org
+
+text_sensor:
+  - platform: version
+    name: $devicename ESPHome Version
+  - platform: wifi_info
+    ip_address:
+      name: $devicename IP
+    ssid:
+      name: $devicename SSID
+    bssid:
+      name: $devicename BSSID
+
+globals:
+# ------------------------------ Multiplier to remove the comma from the sensor data
+  - id: tank_multi
+    type: float
+    restore_value: no
+    initial_value: '10000'
+# ------------------------------ Size of the material inside the tank, calculated subrstracting the minimom distante from the maximum distance 
+  - id: tank_diff
+    type: float
+    restore_value: no
+    initial_value: $max_sensor-$min_sensor
+# ------------------------------ Actual distance from the sensor
+  - id: tank_act_level
+    type: float
+    restore_value: no
+    initial_value: '0'
+
+switch:
+# ------------------------------ Restart board switch
+  - platform: restart
+    name: "$devicename Restart"
+
+sensor:
+# ------------------------------ UpTime sensor
+  - platform: uptime
+    name: $devicename Uptime
+  
+# ------------------------------ WiFi Signal sensor
+  - platform: wifi_signal
+    name: $devicename WiFi Signal
+    update_interval: 60s
+
+# ------------------------------ Ultrasonic sensor - Sensor distance in centimeter
+# TX - Echo    - D3
+# RX - Trigger - D4
+
+  - platform: ultrasonic
+    trigger_pin: GPIO5
+    echo_pin: GPIO18
+    name: "$devicename Sensor distance"
+    unit_of_measurement: "cm"
+    accuracy_decimals: 2
+    update_interval: $upd_interval
+    timeout: 4.5m
+    pulse_time: 10us
+    filters:
+      - lambda: !lambda |-
+          if (x>0) {
+            id(tank_act_level) = x;
+            return x*100;
+          } else {
+            return 0;
+          }
+      - filter_out: nan
+
+
+# ------------------------------ Tank fill in percentage
+  - platform: template
+    update_interval: $upd_interval
+    name: "$devicename"
+    unit_of_measurement: "%"
+    icon: mdi:water-percent
+    accuracy_decimals: 0
+    lambda: |-
+      if (id(tank_act_level)>0) {
+        return ((((id(tank_act_level)*id(tank_multi))-$min_sensor)-id(tank_diff))/id(tank_diff))*-100;
+      } else {
+        return {};
+      }
+
+# ------------------------------ Tank volume fill in liters
+  - platform: template
+    update_interval: $upd_interval
+    name: "$devicename Volume"
+    icon: mdi:arrow-expand-vertical
+    unit_of_measurement: "L"
+    accuracy_decimals: 0
+    lambda: |-
+      if (id(tank_act_level)>0) {
+        return ((((id(tank_act_level)*id(tank_multi))-$min_sensor)-id(tank_diff))/id(tank_diff))*-$tank_capacity;
+      } else {
+        return {};
+      }
