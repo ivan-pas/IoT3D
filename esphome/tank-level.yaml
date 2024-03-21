@@ -8,7 +8,7 @@ substitutions:
   gateway_ip: 192.168.1.1                                 # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
   subnet_mask: 255.255.255.0                              # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
   dns_ip: 8.8.8.8                                         # Change for use a static ip address or remove this row and manual_ip block
-  ap_mode_password: 12345678                              # Change password for access point mode (fallback)
+  ap_mode_password: "12345678"                            # Change password for access point mode (fallback)
   upd_interval:  5s                                       # Change this if you want to change the sensor update interval
   min_sensor:    "2048"                                   # Minimum distance from ultrasonic sensor in cm x100 (20cm=2000) , note that JSN-SR04T can't read less than 20cm!
   max_sensor:    "15500"                                  # Maximum distance inside the tank in cm x100 (20cm=2000)

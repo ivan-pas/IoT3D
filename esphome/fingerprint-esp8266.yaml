@@ -1,6 +1,20 @@
+substitutions:
+  devicename:    Fingerprint Sensor                          # Chose an arbitrary name
+  devicename_id: fingerprint_sensor                          # chose an arbitrary ID 
+  apikey: "/ApGQuwu3PHMk5dgZxNrBIc1fZDGBDfwt3qi8PoTDWg="  # Random Base64 32byte string - for generating > https://esphome.io/components/api.html#configuration-variables
+  wifi_ssid: name-of-your-wi-fi                           # Change with the name of your Wi-Fi Access Point
+  wifi_password: password-of-your-wifi                    # Change with your Wi-Fi password
+  static_ipaddr: 192.168.1.201                            # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  gateway_ip: 192.168.1.1                                 # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  subnet_mask: 255.255.255.0                              # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
+  dns_ip: 8.8.8.8                                         # Change for use a static ip address or remove this row and manual_ip block
+  ap_mode_password: "12345678"                            # Change password for access point mode (fallback)
+
+##############################################################################################################
+
 esphome:
-  name: fingerprint
-  friendly_name: fingerprint
+  name: $devicename
+  friendly_name: $devicename_id
 
 esp8266:
   board: esp01_1m
@@ -35,19 +49,30 @@ api:
       - fingerprint_grow.delete_all:
 
 ota:
-  password: "ac8da78e2ddb82bfb1f2865588032f60"
+
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
+  ssid: $wifi_ssid
+  password: $wifi_password
+#####################################################################
+######            REMOVE THIS BLOCK IF YOU USE DHCP           #######        
+#####################################################################
+  manual_ip:                                                       ##
+    static_ip: $static_ipaddr                                      ##
+    gateway:   $gateway_ip                                         ##
+    subnet:    $subnet_mask                                        ##
+    dns1:      $dns_ip                                             ##
+                                                                   ##
+#####################################################################
 
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "Fingerprint Fallback Hotspot"
-    password: "qdxCk4L7Z38C"
+    ssid:      $devicename Hotspot
+    password:  $ap-mode_password
 
 web_server:
   port: 80
+  version: 2
+  local: true
 
 captive_portal:
 

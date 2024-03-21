@@ -8,8 +8,7 @@ substitutions:
   gateway_ip: 192.168.1.1                                 # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
   subnet_mask: 255.255.255.0                              # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
   dns_ip: 8.8.8.8                                         # Change for use a static ip address or remove this row and manual_ip block
-  ap_mode_password: 12345678                              # Change password for access point mode (fallback)
-
+  ap_mode_password: "12345678"
 ##############################################################################################################
 
 esphome:
