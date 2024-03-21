@@ -19,7 +19,7 @@ esp32:
   board: lolin_s2_mini
 
 # Enable logging
-logger: device
+logger:
 
 wifi:
   ssid: $wifi_ssid
