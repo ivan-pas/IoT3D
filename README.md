@@ -23,5 +23,6 @@ substitutions:
 ```
 
 
+xfgb
 
 https://esphome.io/components/api.html#configuration-variables
