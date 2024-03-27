@@ -9,7 +9,7 @@ substitutions:
   subnet_mask: 255.255.255.0                              # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
   dns_ip: 8.8.8.8                                         # Change for use a static ip address or remove this row and manual_ip block
   ap_mode_password: "12345678"                            # Change password for access point mode (fallback)
-
+  altitude: 245m                                          # Change the value based on your location altitude
 ##############################################################################################################
 
 esphome:
@@ -113,9 +113,11 @@ sensor:
     humidity:
       name: "Humidity"
       accuracy_decimals: 1
-    temperature_offset: 1.5 °C
+    temperature_offset: 4 °C
     address: 0x61
     update_interval: 5s
+#    automatic_self_calibration: true
+    altitude_compensation: $altitude
 
 binary_sensor:
   - platform: ld2410
@@ -163,7 +165,7 @@ number:
     id: co2_cal
     icon: "mdi:molecule-co2"
     entity_category: "config"
- 
+
 switch:
   - platform: ld2410
     engineering_mode:
