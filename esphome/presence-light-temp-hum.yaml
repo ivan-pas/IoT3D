@@ -2,7 +2,7 @@ substitutions:
   devicename:    espresenceld_b655d0                          # Chose an arbitrary name max 32 characters
   devicename_id: espresenceld_b655d0                          # chose an arbitrary ID 
   apikey: "/ApGQuwu3PHMk5dgZxNrBIc1fZDGBDfwt3qi8PoTDWg="  # Random Base64 32byte string - for generating > https://esphome.io/components/api.html#configuration-variables
-  wifi_ssid: io                           # Change with the name of your Wi-Fi Access Point
+  wifi_ssid:                            # Change with the name of your Wi-Fi Access Point
   wifi_password:                     # Change with your Wi-Fi password
   static_ipaddr: 192.168.3.1                            # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
   gateway_ip: 192.168.1.1                                 # Change for use a static ip address or to use DHCP, remove this row and manual_ip block
